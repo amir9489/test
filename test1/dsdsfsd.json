@@ -1,1 +1,2990 @@
-
+{
+  "info": {
+    "_postman_id": "402a4f94-fe48-47d8-9a4f-244f400b326d",
+    "name": "Order Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34445327"
+  },
+  "item": [
+    {
+      "name": "Happy path",
+      "item": [
+        {
+          "name": "create order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "orders list",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"orders not empty\", function(){\r",
+                  "    pm.expect(response.orders).to.be.an(\"array\")\r",
+                  "    pm.expect(response.orders.length).to.be.greaterThan(0)\r",
+                  "})\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit order",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"s\",\r\n    \"items\": [ { \"productId\": \"\" , \"qty\": 1 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CONFIRMED\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Validation",
+      "item": [
+        {
+          "name": "create order without customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 400:\", function(){\r",
+                  "    pm.response.to.have.status(400)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Invalid order data\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create order without items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 400:\", function(){\r",
+                  "    pm.response.to.have.status(400)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Invalid order data\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\"\r\n    \r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "create order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit order without customer",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 400:\", function(){\r",
+                  "    pm.response.to.have.status(400)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Invalid order data\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \r\n    \"items\": [ { \"productId\": \"d\" , \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit order with invalid orderId",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 404:\", function(){\r",
+                  "    pm.response.to.have.status(404)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Order not found\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \r\n    \"items\": [ { \"productId\": \"d\" , \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/asd",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "asd"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order with invalid state",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 400:\", function(){\r",
+                  "    pm.response.to.have.status(400)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Invalid state\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CANCELE\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order with invalid orderid",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 404:\", function(){\r",
+                  "    pm.response.to.have.status(404)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Order not found\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CANCELLE\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/12/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "12",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete order with invalid orderId",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 404:\", function(){\r",
+                  "    pm.response.to.have.status(404)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Order not found\")\r",
+                  "    })\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/21",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "21"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Delete Scenarios",
+      "item": [
+        {
+          "name": "create order (NEW)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete order",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response).to.not.empty\r",
+                  "    pm.expect(response.success).to.eql(true)\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Cancel delete scenarios",
+      "item": [
+        {
+          "name": "create new order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order (CANCELLED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CANCELLED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete order (CANCELLED)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response).to.not.empty\r",
+                  "    pm.expect(response.success).to.eql(true)\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "shipped delete&edit scenarios",
+      "item": [
+        {
+          "name": "create order (NEW)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order(CONFIRMED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CONFIRMED\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order(SHIPPED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"SHIPPED\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete order (SHIPPED)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 409:\", function(){\r",
+                  "    pm.response.to.have.status(409)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Order cannot be deleted in current state\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit order shipped scenarios",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 409:\", function(){\r",
+                  "    pm.response.to.have.status(409)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Order cannot be updated in current state\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"s\",\r\n    \"items\": [ { \"productId\": \"\" , \"qty\": 1 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "confirmed delete&edit scenarios",
+      "item": [
+        {
+          "name": "create order (NEW)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order(confirmed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CONFIRMED\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete order (confirmed)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 409:\", function(){\r",
+                  "    pm.response.to.have.status(409)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Order cannot be deleted in current state\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit order confirmed scenarios",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 409:\", function(){\r",
+                  "    pm.response.to.have.status(409)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Order cannot be updated in current state\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"s\",\r\n    \"items\": [ { \"productId\": \"\" , \"qty\": 1 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "create new order (invalid token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 401:\", function(){\r",
+                  "    pm.response.to.have.status(401)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Unauthorized\")\r",
+                  "    })\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123s",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "orders list (invalid token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 401:\", function(){\r",
+                  "    pm.response.to.have.status(401)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Unauthorized\")\r",
+                  "    })\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123s",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit order (invalid token)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 401:\", function(){\r",
+                  "    pm.response.to.have.status(401)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Unauthorized\")\r",
+                  "    })\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123s",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"s\",\r\n    \"items\": [ { \"productId\": \"\" , \"qty\": 1 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order (invalid token)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 401:\", function(){\r",
+                  "    pm.response.to.have.status(401)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Unauthorized\")\r",
+                  "    })\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123s",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CONFIRMED\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete order (invalid token)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 401:\", function(){\r",
+                  "    pm.response.to.have.status(401)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Unauthorized\")\r",
+                  "    })\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123s",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "shipped change status scenarios",
+      "item": [
+        {
+          "name": "create order (NEW)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order(confirmed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CONFIRMED\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order(SHIPPED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"SHIPPED\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order (CANCELLED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 409:\", function(){\r",
+                  "    pm.response.to.have.status(409)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Invalid state transition\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CANCELLED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "confirmed changestatus scenarios",
+      "item": [
+        {
+          "name": "create order (NEW)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order(confirmed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CONFIRMED\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order (CANCELLED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CANCELLED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "new change status scenarios",
+      "item": [
+        {
+          "name": "create order (NEW)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order (CANCELLED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CANCELLED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "canceled edit scenarios",
+      "item": [
+        {
+          "name": "create new order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 201:\", function(){\r",
+                  "    pm.response.to.have.status(201)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response exist id\", function(){\r",
+                  "    pm.expect(response.order.id).have.to.exist\r",
+                  "    pm.expect(response.order.id).to.be.a('string')\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"state exist\", function(){\r",
+                  "    pm.expect(response.order.state).have.exist\r",
+                  "    pm.expect(response.order.state).to.eql(\"NEW\")\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"customer exist\", function(){\r",
+                  "    pm.expect(response.order.customer).to.exist\r",
+                  "    pm.expect(response.order.items).to.be.an('array')\r",
+                  "    })\r",
+                  "\r",
+                  "pm.environment.set(\"orderId\", response.order.id)   "
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"Ali\",\r\n    \"items\": [ { \"productId\": \"p1\", \"qty\": 2 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "change status order (CANCELLED)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 200\", function(){\r",
+                  "    pm.expect(pm.response.to.have.status(200))\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"response parameter is ok\", function(){\r",
+                  "    pm.expect(response.order.id).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.customer).to.be.a(\"string\")\r",
+                  "    pm.expect(response.order.items).to.be.an(\"array\")\r",
+                  "    pm.expect(response.order.state).not.eql(\"NEW\")\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})\r",
+                  "\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"newState\": \"CANCELLED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/state",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "state"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Edit order cancelled scenarios",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.test(\"orderId exist\", function(){\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.exist\r",
+                  "    pm.expect(pm.environment.get(\"orderId\")).to.not.empty\r",
+                  "})"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let response = pm.response.json()\r",
+                  "pm.test(\"status code is 409:\", function(){\r",
+                  "    pm.response.to.have.status(409)\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"error messege validation\", function(){\r",
+                  "    pm.expect(response).to.not.undefined\r",
+                  "    pm.expect(response.error).to.not.be.empty\r",
+                  "    pm.expect(response.error).to.eql(\"Order cannot be updated in current state\")\r",
+                  "    })"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer validtoken123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n  {\r\n    \"customer\": \"s\",\r\n    \"items\": [ { \"productId\": \"\" , \"qty\": 1 } ]\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/orders/{{orderId}}/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "orders",
+                "{{orderId}}",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
