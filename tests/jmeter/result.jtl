@@ -1,0 +1,5 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1783963895419,2,reserve,201,Created,Thread Group 1-1,text,true,,262,220,1,1,http://localhost:3000/api/reserve,2,0,1
+1783963895422,1,pay,200,OK,Thread Group 1-1,text,true,,247,205,1,1,http://localhost:3000/api/pay,1,0,0
+1783963895424,0,status,200,OK,Thread Group 1-1,text,true,,264,129,1,1,http://localhost:3000/api/status/r4,0,0,0
+1783963895424,1,cancel,409,Conflict,Thread Group 1-1,text,false,,299,208,1,1,http://localhost:3000/api/cancel,1,0,0
